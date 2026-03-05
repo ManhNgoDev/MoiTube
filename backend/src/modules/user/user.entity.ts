@@ -6,8 +6,13 @@ export enum UserRole {
     ADMIN = 'admin'
 }
 
+export enum AuthProvider {
+    LOCAL = 'local',
+    GOOGLE = 'google'
+}
+
 @Entity('users')
-export class User{
+export class User {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
@@ -18,7 +23,17 @@ export class User{
     username!: string;
 
     @Column({nullable: true})
-    password_hash!: string;
+    password_hash?: string;
+
+    @Column({unique: true, nullable: true})
+    google_id?: string;
+
+    @Column({
+        type: 'enum',
+        enum: AuthProvider,
+        default: AuthProvider.LOCAL
+    })
+    auth_provider!: AuthProvider;
 
     @Column({type: 'text', nullable: true})
     avatar_url!: string;

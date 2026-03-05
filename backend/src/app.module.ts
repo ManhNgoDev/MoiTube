@@ -3,6 +3,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { RefreshTokensModule } from './modules/refresh_tokens/refresh_tokens.module';
+import { EmailVerificationModule } from './modules/email_verification/email_verification.module';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         url: config.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
         synchronize: true,
-        logging: ['error', 'query', 'schema'],
+        logging: ['error'],
         ssl: {
           rejectUnauthorized: false
         },
@@ -24,6 +26,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     AuthModule,
     UserModule,
+    RefreshTokensModule,
+    EmailVerificationModule,
   ]
 })
 export class AppModule {}

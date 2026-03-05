@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DataSource } from 'typeorm';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const dataSource = app.get(DataSource);
+
+  app.useGlobalPipes(new ValidationPipe());
   
   if (dataSource.isInitialized) {
     console.log('✅ Connected to PostgreSQL successfully!');

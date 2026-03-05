@@ -13,14 +13,14 @@ export class AuthService {
         private jwtService: JwtService,
     ) {}
 
-    async register(email: string, username: string, password_hash: string) {
+    async register(email: string, username: string, password: string) {
         const existingUser = await this.userRepo.findOne({ where: [{ email }, { username }] });
 
         if(existingUser) {
             throw new Error('Email hoặc username đã tồn tại');
         }
 
-        const hashedPassword = await bcrypt.hash(password_hash, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = this.userRepo.create({
             email,
