@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RefreshTokensModule } from './modules/refresh_tokens/refresh_tokens.module';
 import { EmailVerificationModule } from './modules/email_verification/email_verification.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { EmailVerificationModule } from './modules/email_verification/email_veri
     UserModule,
     RefreshTokensModule,
     EmailVerificationModule,
+    EmailModule,
   ]
 })
 export class AppModule {}

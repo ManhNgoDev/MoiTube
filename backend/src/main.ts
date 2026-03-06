@@ -8,7 +8,11 @@ async function bootstrap() {
 
   const dataSource = app.get(DataSource);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true
+  }));
   
   if (dataSource.isInitialized) {
     console.log('✅ Connected to PostgreSQL successfully!');

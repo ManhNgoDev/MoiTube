@@ -10,6 +10,9 @@ export class Email_Verification {
     @JoinColumn({name: 'user_id'})
     user!: User;
 
+    @Column({name: 'user_id'})
+    user_id!: string;
+
     @Column({unique: true, nullable: false})
     token!: string;
 

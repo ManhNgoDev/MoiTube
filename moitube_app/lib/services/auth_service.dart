@@ -12,4 +12,14 @@ class AuthService {
     );
     return res.data;
   }
+
+  Future resendVerify(String email) async {
+    final res = await ApiClient.dio.post(
+      '/auth/resend-verify',
+      data: {
+        "email": email
+      }
+    );
+    return res.data;
+  }
 }

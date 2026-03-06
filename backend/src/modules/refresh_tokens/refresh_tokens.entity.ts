@@ -10,6 +10,9 @@ export class Refresh_Tokens {
     @JoinColumn({name: 'user_id'})
     user!: User;
 
+    @Column({name: 'user_id'})
+    user_id!: string;
+
     @Column({unique: true, nullable: false})
     token_hash!: string;
 

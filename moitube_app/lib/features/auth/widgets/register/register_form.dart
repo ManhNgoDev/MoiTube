@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moitube_app/features/auth/screens/login_screen.dart';
+import 'package:moitube_app/features/auth/widgets/register/verifi_email_dialog.dart';
 import 'package:moitube_app/services/auth_service.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -18,13 +19,12 @@ class _RegisterFormState extends State<RegisterForm> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController =  TextEditingController();
-
   final AuthService authService = AuthService();
 
   Future handleRegister() async {
     if(passwordController.text.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Mật khẩu phải trên 8 ký tự trở lên'))
+        SnackBar(content: Text('Mật khẩu phải từ 8 ký tự trở lên'))
       );
       return;
     }
@@ -46,19 +46,21 @@ class _RegisterFormState extends State<RegisterForm> {
         usernameController.text,
         passwordController.text
       );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Đăng ký tài khoản thành công'))
+
+      if(!mounted) return;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => VerifyEmailDialog(
+          email: emailController.text.trim(),
+          authService: authService,
+        )
       );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginScreen()
-        ),
-      );
     } catch (e) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Lỗi: $e'))
       );
@@ -167,7 +169,7 @@ class _RegisterFormState extends State<RegisterForm> {
           SizedBox(height: 5),
 
           Text(
-            'Tối đa 8 ký tự',
+            'Tối thiểu 8 ký tự',
             style: TextStyle(fontSize: 13, color: Colors.white60),
           ),
 
@@ -243,7 +245,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     color: Colors.white,
                   ),
                 )
-                : Text('Đăng ký'),
+                : Text('Đăng ký', style: TextStyle(color: Colors.white, fontSize: 20),),
               ),
             ),
           ),

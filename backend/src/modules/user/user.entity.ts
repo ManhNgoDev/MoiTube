@@ -1,8 +1,7 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export enum UserRole {
     USER = 'user',
-    CREATOR = 'creator',
     ADMIN = 'admin'
 }
 
@@ -51,14 +50,9 @@ export class User {
 
     @CreateDateColumn({
         type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP'
     })
     created_at!: Date;
 
-    @CreateDateColumn({
-        type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
-        onUpdate: 'CURRENT_TIMESTAMP'
-    })
+    @UpdateDateColumn({ type: 'timestamp' })
     updated_at!: Date;
 }
