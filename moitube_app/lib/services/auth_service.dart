@@ -1,12 +1,24 @@
 import 'package:moitube_app/core/api_client.dart';
 
 class AuthService {
+  //Đăng ký
   Future register(String email, String username, String password) async {
     final res = await ApiClient.dio.post(
       "/auth/register",
       data: {
         "email": email,
         "username": username,
+        "password": password
+      }
+    );
+    return res.data;
+  }
+  //Đăng nhập
+  Future login(String email, String password) async {
+    final res = await ApiClient.dio.post(
+      "/auth/login",
+      data: {
+        "email": email,
         "password": password
       }
     );

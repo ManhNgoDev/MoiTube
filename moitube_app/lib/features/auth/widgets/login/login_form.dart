@@ -1,10 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:moitube_app/features/auth/controllers/auth_controller.dart';
+import 'package:provider/provider.dart';
 
-class LoginForm extends StatelessWidget{
+class LoginForm extends StatefulWidget{
   const LoginForm({super.key});
 
   @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+
+  bool showPassword = false;
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  Future handleLogin() async {
+    if(emailController.text.trim().isEmpty || passwordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Vui lòng điền đậy đủ thông tin'))
+      );
+      return;
+    }
+
+    if(!emailController.text.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Email không hợp lệ'))
+      );
+      return;
+    }
+
+    final success = await context.read<AuthController>().login(
+      context,
+      emailController.text.trim(),
+      passwordController.text,
+    );
+
+    if(success && mounted) {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthController>().isLoading;
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -21,6 +61,7 @@ class LoginForm extends StatelessWidget{
           SizedBox(height: 10,),
 
           TextField(
+            controller: emailController,
             style: TextStyle(color: Colors.white),
             decoration: InputDecoration(
               prefixIcon: Icon(
@@ -54,6 +95,8 @@ class LoginForm extends StatelessWidget{
           SizedBox(height: 10,),
 
           TextField(
+            controller: passwordController,
+            obscureText: !showPassword,
             style: TextStyle(color: Colors.white),
             decoration: InputDecoration(
               prefixIcon: Icon(
@@ -64,9 +107,16 @@ class LoginForm extends StatelessWidget{
               hintText: '........',
               hintStyle: TextStyle(color: Colors.white60),
 
-              suffixIcon: Icon(
-                Icons.visibility,
-                color: Colors.white60,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  showPassword ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.white70,
+                ),
+                onPressed: () {
+                  setState(() {
+                    showPassword = !showPassword;
+                  });
+                },
               ),
 
               filled: true,
@@ -109,23 +159,31 @@ class LoginForm extends StatelessWidget{
                 borderRadius: BorderRadius.circular(30),
               ),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: isLoading ? null : handleLogin,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
 
                 ),
-                child: Text(
-                  'Đăng nhập',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white
-                  ),
-                )
+                child: isLoading ? SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  )
+                ) : Text('Đăng nhập', style: TextStyle(fontSize: 20, color: Colors.white),)
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 }

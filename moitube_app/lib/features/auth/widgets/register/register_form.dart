@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:moitube_app/features/auth/screens/login_screen.dart';
+import 'package:moitube_app/features/auth/controllers/auth_controller.dart';
 import 'package:moitube_app/features/auth/widgets/register/verifi_email_dialog.dart';
-import 'package:moitube_app/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
@@ -13,14 +13,12 @@ class _RegisterFormState extends State<RegisterForm> {
 
   bool showPassword = false;
   bool showConfirmPassword = false;
-  bool isLoading = false;
 
   final emailController = TextEditingController();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController =  TextEditingController();
-  final AuthService authService = AuthService();
-
+  
   Future handleRegister() async {
     if(passwordController.text.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -36,39 +34,25 @@ class _RegisterFormState extends State<RegisterForm> {
         return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    final success = await context.read<AuthController>().register(
+      context,
+      emailController.text.trim(),
+      usernameController.text.trim(),
+      passwordController.text,
+    );
 
-    try {
-      await authService.register(
-        emailController.text,
-        usernameController.text,
-        passwordController.text
-      );
-
-      if(!mounted) return;
-
+    if(success && mounted) {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (_) => VerifyEmailDialog(
-          email: emailController.text.trim(),
-          authService: authService,
-        )
-      );
-
-    } catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi: $e'))
+        builder: (_) => VerifyEmailDialog(email: emailController.text.trim())
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthController>().isLoading;
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -146,7 +130,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
               suffixIcon: IconButton(
                 icon: Icon(
-                  showPassword ? Icons.visibility : Icons.visibility_off,
+                  showPassword ? Icons.visibility_off : Icons.visibility,
                   color: Colors.white70,
                 ),
                 onPressed: () {
@@ -194,7 +178,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
               suffixIcon: IconButton(
                 icon: Icon(
-                  showConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                  showConfirmPassword ? Icons.visibility_off : Icons.visibility,
                   color: Colors.white70,
                 ),
 

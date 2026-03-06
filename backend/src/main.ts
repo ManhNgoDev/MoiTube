@@ -15,7 +15,7 @@ async function bootstrap() {
   }));
   
   if (dataSource.isInitialized) {
-    console.log('✅ Connected to PostgreSQL successfully!');
+    console.log('Connected to PostgreSQL successfully!');
   }
 
   await app.listen(3000);

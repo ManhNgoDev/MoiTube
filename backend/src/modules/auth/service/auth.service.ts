@@ -1,12 +1,12 @@
 import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User, UserRole } from '../user/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { Email_Verification } from '../email_verification/email_verification.entity';
-import { EmailService } from '../email/email.service';
 import { randomBytes } from 'crypto';
+import { User, UserRole } from '../../user/entities/user.entity';
+import { Email_Verification } from '../entities/email_verification.entity';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class AuthService {

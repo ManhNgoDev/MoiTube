@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:moitube_app/features/auth/controllers/auth_controller.dart';
 import 'package:moitube_app/features/auth/screens/login_screen.dart';
-import 'package:moitube_app/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
-class VerifyEmailDialog extends StatelessWidget {
+class VerifyEmailDialog extends StatefulWidget {
   final String email;
-  final AuthService authService;
 
   const VerifyEmailDialog({
     super.key,
     required this.email,
-    required this.authService,
   });
+
+  @override
+  State<VerifyEmailDialog> createState() => _VerifyEmailDialogState();
+}
+
+class _VerifyEmailDialogState extends State<VerifyEmailDialog> {
+  bool isResending = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,32 +31,44 @@ class VerifyEmailDialog extends StatelessWidget {
         ],
       ),
       content: Text(
-        'Chúng tôi đã gửi link xác nhận đến\n$email\n\nVui lòng kiểm tra hộp thư và click vào link để kích hoạt tài khoản.',
+        'Chúng tôi đã gửi link xác nhận đến\n${widget.email}\n\nVui lòng kiểm tra hộp thư và click vào link để kích hoạt tài khoản.',
         style: const TextStyle(color: Colors.white70, height: 1.5),
       ),
       actions: [
         TextButton(
-          onPressed: () async {
-            await authService.resendVerify(email);
-            if (!context.mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Đã gửi lại email xác nhận')),
+          onPressed: isResending ? null : () async {
+            setState(() => isResending = true);
+
+            await context.read<AuthController>().resendVerify(
+              context,
+              widget.email,
             );
+
+            if (mounted) setState(() => isResending = false);
           },
-          child: const Text(
-            'Gửi lại email',
-            style: TextStyle(color: Colors.white54),
-          ),
+          child: isResending
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white54,
+                  ),
+                )
+              : const Text(
+                  'Gửi lại email',
+                  style: TextStyle(color: Colors.white54),
+                ),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xfff6339a),
           ),
           onPressed: () {
-            Navigator.pop(context);
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (route) => false,
             );
           },
           child: const Text('Đến trang đăng nhập'),
