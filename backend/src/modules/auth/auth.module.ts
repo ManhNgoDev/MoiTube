@@ -9,6 +9,7 @@ import { Email_Verification } from './entities/email_verification.entity';
 import { AuthController } from './controller/auth.controller';
 import { AuthService } from './service/auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 
 @Module({
@@ -26,6 +27,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     EmailModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard]
+  providers: [AuthService, JwtStrategy, JwtAuthGuard]
 })
 export class AuthModule {}

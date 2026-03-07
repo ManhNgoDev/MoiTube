@@ -37,4 +37,9 @@ export class AuthController {
   resendVerification(@Body() body: ResendDto) {
     return this.authService.resendverification(body.email);
   };
+
+  @Post('refresh')
+    refresh(@Body('refresh_token') token: string) {
+    return this.authService.refreshToken(token);
+}
 }

@@ -1,4 +1,5 @@
 import 'package:moitube_app/core/api_client.dart';
+import 'package:moitube_app/services/storage_service.dart';
 
 class AuthService {
   //Đăng ký
@@ -33,5 +34,17 @@ class AuthService {
       }
     );
     return res.data;
+  }
+
+  Future<String?> refreshToken() async {
+    final refreshToken = await StorageService.getRefreshToken();
+    if(refreshToken == null) return null;
+    final res = await ApiClient.dio.post(
+      '/auth/refresh',
+      data: {
+        'refresh_token': refreshToken
+      }
+    );
+    return res.data['access_token'];
   }
 }

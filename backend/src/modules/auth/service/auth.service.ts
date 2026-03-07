@@ -129,11 +129,11 @@ export class AuthService {
             return {message: 'Nếu email tôn tại, chúng tôi đã gửi email xác nhận cho bạn'};
         };
 
-        if(!user.is_verified) {
+        if(user.is_verified) {
             throw new BadRequestException('Email này đã nhận được rồi');
         };
 
-        await this.resendverification(user.email);
+        await this.sendVerificationEmail(user)
 
         return {
             message: 'Nếu email này tồn tại, chúng tôi đã gửi lại email xâc nhận cho bạn'
@@ -157,4 +157,27 @@ export class AuthService {
 
         await this.emailService.sendVerificationEmail(user.email, token);
     };
+    //RERSH TOKEN
+    async refreshToken(token: string) {
+        try {
+            const payload = this.jwtService.verify(token, {
+                secret: process.env.JWT_REFRESH_SECRET,
+            });
+
+            const user = await this.userRepo.findOne({where: {id: payload.sub}});
+
+            if(!user) {
+                throw new UnauthorizedException('User không tồn tại');
+            }
+
+            const newPayload = {sub: user.id, email: user.email, role: user.role}
+
+            const access_token = this.jwtService.sign(newPayload, {
+                expiresIn: '15m'
+            });
+            return {access_token}
+        } catch (error) {
+            throw new UnauthorizedException('Refresh token không hợp lệ hoặc đã hết hạn');
+        }
+    }
 }

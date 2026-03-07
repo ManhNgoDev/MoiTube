@@ -7,6 +7,8 @@ import 'package:moitube_app/features/splash/splash_screen.dart';
 import 'package:moitube_app/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -22,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'MoiTube',
       initialRoute: AppRoutes.splash,

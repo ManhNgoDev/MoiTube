@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:moitube_app/services/auth_service.dart';
+import 'package:moitube_app/services/storage_service.dart';
 
 class AuthController extends ChangeNotifier {
   final AuthService authService = AuthService();
@@ -51,8 +52,10 @@ class AuthController extends ChangeNotifier {
 
     try {
       final data = await authService.login(email, password);
-
-      print('Đăng nhập thành công: $data');
+      await StorageService.saveTokens(
+        accessToken: data['access_token'],
+        refreshToken: data['refresh_token'],
+      );
 
       return true;
     } on DioException catch (e) {
