@@ -41,5 +41,5 @@ export class AuthController {
   @Post('refresh')
     refresh(@Body('refresh_token') token: string) {
     return this.authService.refreshToken(token);
-}
+  }
 }

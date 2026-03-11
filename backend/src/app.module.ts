@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RefreshTokensModule } from './modules/auth/modules/refresh_tokens.module';
 import { EmailVerificationModule } from './modules/auth/modules/email_verification.module';
 import { EmailModule } from './modules/email/email.module';
+import { ChannelModule } from './modules/channel/channel.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { EmailModule } from './modules/email/email.module';
     RefreshTokensModule,
     EmailVerificationModule,
     EmailModule,
+    ChannelModule,
   ]
 })
 export class AppModule {}
