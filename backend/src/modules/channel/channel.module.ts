@@ -7,8 +7,11 @@ import { SubscriptionService } from './service/subscription.service';
 import { ChannelController } from './controller/channel.controller';
 import { SubscriptionController } from './controller/subscription.controller';
 
+import { User } from '../user/entities/user.entity';
+
 @Module({
-    imports: [TypeOrmModule.forFeature([Channel, Subscription])],
+    imports: [TypeOrmModule.forFeature([Channel, Subscription, User])],
+
     providers: [ChannelService, SubscriptionService],
     controllers: [ChannelController, SubscriptionController],
     exports: [ChannelService, TypeOrmModule],

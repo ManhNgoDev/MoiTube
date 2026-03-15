@@ -47,4 +47,17 @@ class AuthService {
     );
     return res.data['access_token'];
   }
+
+  // Đăng xuất
+  Future logout() async {
+    final refreshToken = await StorageService.getRefreshToken();
+    if(refreshToken == null) return;
+    final res = await ApiClient.dio.post(
+      '/auth/logout',
+      data: {
+        'refresh_token': refreshToken
+      }
+    );
+    return res.data;
+  }
 }

@@ -3,18 +3,33 @@ import * as nodemailer from 'nodemailer'
 
 @Injectable()
 export class EmailService {
-    private transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_APP_PASSWORD,
-        },
-    });
+    private getTransporter() {
+        if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+            return null;
+        }
+        return nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.GMAIL_USER,
+                pass: process.env.GMAIL_APP_PASSWORD,
+            },
+        });
+    }
 
     async sendVerificationEmail(email: string, token: string) {
         const verifyUrl = `${process.env.APP_URL}/auth/verify?token=${token}`;
+        const transporter = this.getTransporter();
 
-        await this.transporter.sendMail({
+        if (!transporter) {
+            console.log('--- DEV EMAIL MODE ---');
+            console.log(`To: ${email}`);
+            console.log(`Verify URL: ${verifyUrl}`);
+            console.log('-----------------------');
+            return;
+        }
+
+        await transporter.sendMail({
+
             from: `"MoiTube" <${process.env.GMAIL_USER}>`,
             to: email,
             subject: 'Xác nhận email đăng ký MoiTube',

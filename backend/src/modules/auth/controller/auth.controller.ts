@@ -9,7 +9,7 @@ import { ResendDto } from '../dto/resend.dto';
 @Controller('auth')
 export class AuthController {
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('register')
   register(@Body() body: RegisterDto) {
@@ -33,13 +33,18 @@ export class AuthController {
     return this.authService.verifyEmail(token);
   };
 
-  @Get('resend-verify')
+  @Post('resend-verify')
   resendVerification(@Body() body: ResendDto) {
     return this.authService.resendverification(body.email);
   };
 
   @Post('refresh')
-    refresh(@Body('refresh_token') token: string) {
+  refresh(@Body('refresh_token') token: string) {
     return this.authService.refreshToken(token);
+  }
+
+  @Post('logout')
+  logout(@Body('refresh_token') token: string) {
+    return this.authService.logout(token);
   }
 }

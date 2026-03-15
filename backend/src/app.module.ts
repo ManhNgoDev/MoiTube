@@ -7,6 +7,7 @@ import { RefreshTokensModule } from './modules/auth/modules/refresh_tokens.modul
 import { EmailVerificationModule } from './modules/auth/modules/email_verification.module';
 import { EmailModule } from './modules/email/email.module';
 import { ChannelModule } from './modules/channel/channel.module';
+import { VideoModule } from './modules/videos/video.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ChannelModule } from './modules/channel/channel.module';
     EmailVerificationModule,
     EmailModule,
     ChannelModule,
+    VideoModule,
   ]
 })
 export class AppModule {}

@@ -99,4 +99,24 @@ class AuthController extends ChangeNotifier {
       );
     }
   }
+
+  // LOGOUT
+  Future<void> logout(BuildContext context) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      await authService.logout();
+    } catch (e) {
+      debugPrint("Lỗi đăng xuất server: $e");
+    } finally {
+      await StorageService.clearTokens();
+      isLoading = false;
+      notifyListeners();
+
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      }
+    }
+  }
 }

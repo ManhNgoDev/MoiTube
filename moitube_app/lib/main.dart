@@ -6,19 +6,25 @@ import 'package:moitube_app/features/home/screens/home_screen.dart';
 import 'package:moitube_app/features/splash/splash_screen.dart';
 import 'package:moitube_app/routes/app_routes.dart';
 import 'package:provider/provider.dart';
-
+import 'package:moitube_app/features/home/controllers/channel_controller.dart';
+import 'package:moitube_app/features/home/screens/edit_profile_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AuthController(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(create: (_) => ChannelController()),
+      ],
       child: const MyApp()
     )
   );
 }
 
+
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   @override
@@ -33,6 +39,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.login: (context) => LoginScreen(),
         AppRoutes.register: (context) => RegisterScreen(),
         AppRoutes.home: (context) => HomeScreen(),
+        AppRoutes.editProfile: (context) => const EditProfileScreen(),
       },
     );
   }

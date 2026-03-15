@@ -6,29 +6,29 @@ export class Channel {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
-    @ManyToOne(() => User, {onDelete: 'CASCADE'})
-    @JoinColumn({name: 'user_id'})
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'user_id' })
     user!: User;
 
-    @Column({unique: true, nullable: false})
+    @Column({ unique: true, nullable: false })
     handle!: string;
 
-    @Column({nullable: false})
+    @Column({ nullable: false })
     name!: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     description!: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     banner_url!: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     website_url!: string;
 
-    @Column({type: 'jsonb', default: {}, nullable: true})
+    @Column({ type: 'jsonb', default: {}, nullable: true })
     social_link!: Record<string, string>;
 
-    @Column({default: 0})
+    @Column({ default: 0 })
     subscriber_count!: number;
 
     @CreateDateColumn()

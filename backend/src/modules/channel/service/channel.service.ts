@@ -10,7 +10,10 @@ export class ChannelService {
     constructor(
         @InjectRepository(Channel)
         private channelRepo: Repository<Channel>,
+        @InjectRepository(User)
+        private userRepo: Repository<User>,
     ) {}
+
     //Hệ thống tự động tạo channel sau khi đăng ký tài khoản
     async createChannel(user: User) {
         const handle = user.username.toLowerCase().replace(/[^a-z0-9_]/g, '_')
@@ -36,14 +39,23 @@ export class ChannelService {
     }
     //Tìm Channel ID
     async findById(userId: string): Promise<Channel> {
-        const channel = await this.channelRepo.findOne({
+        let channel = await this.channelRepo.findOne({
             where: {user: {id: userId}},
+            relations: ['user']
         })
 
-        if(!channel) throw new NotFoundException('Kênh không tồn tại')
+        if(!channel) {
+            // Nếu chưa có channel, tự động tạo mới (cho user cũ)
+            const user = await this.userRepo.findOne({ where: { id: userId } });
+            if (!user) throw new NotFoundException('Người dùng không tồn tại');
+            channel = await this.createChannel(user);
+            // Sau khi tạo xong, load lại relations để có user object đầy đủ
+            return this.findById(userId);
+        }
         
         return channel;
     }
+
     //Cập nhật thông tin channel
     async updateChannel(channelId: string, userId: string, dto: UpdateChannelDto): Promise<Channel> {
         const channel = await this.channelRepo.findOne({

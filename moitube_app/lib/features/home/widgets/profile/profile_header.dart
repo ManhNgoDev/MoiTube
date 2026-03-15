@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:moitube_app/features/auth/controllers/auth_controller.dart';
 
 class ProfileHeader extends StatelessWidget{
   const ProfileHeader({super.key});
@@ -48,11 +50,13 @@ class ProfileHeader extends StatelessWidget{
         ),
         //Icon Đăng Xuất
         IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.logout,
             color: Colors.white,
           ),
-          onPressed: () {},
+          onPressed: () {
+            context.read<AuthController>().logout(context);
+          },
         ),
       ],
     );
