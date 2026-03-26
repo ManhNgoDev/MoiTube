@@ -17,10 +17,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _tabs = const [
     FeedTab(),
-    SearchTab(),  
+    SearchTab(),
     UploadTab(),
     ChannelTab(),
-    ProfileTab()
+    ProfileTab(),
   ];
 
   @override
@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
-              label: 'Trang Chủ'
+              label: 'Trang Chủ',
             ),
 
             BottomNavigationBarItem(
@@ -64,7 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
-                    colors: [Color(0xffdd4c8e), Color(0xffad46ff), Color(0xffc84adf)]
+                    colors: [
+                      Color(0xffdd4c8e),
+                      Color(0xffad46ff),
+                      Color(0xffc84adf),
+                    ],
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -74,9 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                child: Icon(Icons.add),
+                child: Icon(Icons.add, color: Colors.white),
               ),
-              label: ''
+              label: '',
             ),
 
             BottomNavigationBarItem(
@@ -88,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle_outlined),
               activeIcon: Icon(Icons.account_circle),
-              label: 'Bạn'
+              label: 'Bạn',
             ),
           ],
         ),

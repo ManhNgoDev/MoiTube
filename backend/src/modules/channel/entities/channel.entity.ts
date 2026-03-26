@@ -31,6 +31,12 @@ export class Channel {
     @Column({ default: 0 })
     subscriber_count!: number;
 
+    @Column({ default: 0 })
+    video_count!: number;
+
+    @Column({ default: 0 })
+    view_count!: number;
+
     @CreateDateColumn()
     created_at!: Date;
 }

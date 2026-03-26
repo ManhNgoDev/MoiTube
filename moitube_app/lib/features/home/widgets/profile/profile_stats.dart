@@ -21,7 +21,7 @@ class ProfileStats extends StatelessWidget {
                 child: _buildStatCard(
                   icon: Icons.videocam_outlined,
                   label: 'Videos',
-                  value: '0', 
+                  value: _formatCount(channel.videoCount), 
                   growth: '',
                 ),
               ),
@@ -30,7 +30,7 @@ class ProfileStats extends StatelessWidget {
                 child: _buildStatCard(
                   icon: Icons.visibility_outlined,
                   label: 'Lượt xem',
-                  value: '0', 
+                  value: _formatCount(channel.viewCount), 
                   growth: '',
                 ),
               ),

@@ -27,7 +27,11 @@ class FeedHeader extends StatelessWidget {
             ).createShader(bounds),
             child: Text(
               'MoiTube',
-              style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -62,14 +66,14 @@ class FeedHeader extends StatelessWidget {
         ),
       ],
 
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(48),
-        child: CategoryFilter(
-          selectedIndex: selectedCategory,
-          onChanged: onCategoryChanged,
-          categories: categories,
-        ),
-      ),
+      // bottom: PreferredSize(
+      //   preferredSize: const Size.fromHeight(48),
+      //   child: CategoryFilter(
+      //     selectedIndex: selectedCategory,
+      //     onChanged: onCategoryChanged,
+      //     categories: categories,
+      //   ),
+      // ),
     );
   }
 }

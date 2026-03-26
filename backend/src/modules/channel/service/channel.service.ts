@@ -87,4 +87,20 @@ export class ChannelService {
             delta
         )
     }
+
+    async incrementVideoCount(channelId: string, delta: number): Promise<void> {
+        await this.channelRepo.increment(
+            {id: channelId},
+            'video_count',
+            delta
+        )
+    }
+
+    async incrementViewCount(channelId: string, delta: number): Promise<void> {
+        await this.channelRepo.increment(
+            {id: channelId},
+            'view_count',
+            delta
+        )
+    }
 }

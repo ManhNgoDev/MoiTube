@@ -48,11 +48,16 @@ export class VideoService {
             video_url: videoResult.secure_url,
             thumbnail_url: thumbnailUrl,
             duration: Math.round(duration),
-            status: VideoStatus.PUBLIC,
+            status: dto.status || VideoStatus.PUBLIC,
             published_at: new Date(),
         });
 
-        return await this.videoRepo.save(videoEntity);
+        const savedVideo = await this.videoRepo.save(videoEntity);
+        
+        // Tăng video_count của channel
+        await this.channelService.incrementVideoCount(channel.id, 1);
+
+        return savedVideo;
     }
 
     

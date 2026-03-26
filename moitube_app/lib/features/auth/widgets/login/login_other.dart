@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class LoginOther extends StatelessWidget{
+class LoginOther extends StatelessWidget {
   const LoginOther({super.key});
 
   @override
@@ -11,34 +11,21 @@ class LoginOther extends StatelessWidget{
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                child: Divider(
-                  color: Colors.white60,
-                  thickness: 1,
-                ),
-              ),
+              Expanded(child: Divider(color: Colors.white60, thickness: 1)),
 
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 5),
                 child: Text(
                   'Hoặc tiếp tục với',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
 
-              Expanded(
-                child: Divider(
-                  color: Colors.white60,
-                  thickness: 1,
-                ),
-              ),
+              Expanded(child: Divider(color: Colors.white60, thickness: 1)),
             ],
           ),
 
-          SizedBox(height: 20,),
+          SizedBox(height: 20),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -52,7 +39,7 @@ class LoginOther extends StatelessWidget{
                     borderRadius: BorderRadius.circular(20),
                     side: BorderSide(width: 1, color: Colors.white),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30)
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
                 ),
 
                 icon: Image.asset(
@@ -63,23 +50,20 @@ class LoginOther extends StatelessWidget{
 
                 label: Text(
                   'Google',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white
-                  ),
+                  style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               ),
 
-              SizedBox(width: 40,),
+              SizedBox(width: 30),
 
               ElevatedButton.icon(
-                onPressed: () {}, 
+                onPressed: () {},
 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff18181b),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
-                    side: BorderSide(width: 1, color: Colors.white)
+                    side: BorderSide(width: 1, color: Colors.white),
                   ),
                   padding: EdgeInsets.symmetric(vertical: 14, horizontal: 30),
                 ),
@@ -92,29 +76,23 @@ class LoginOther extends StatelessWidget{
 
                 label: Text(
                   'Facebook',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ],
           ),
 
-          SizedBox(height: 20,),
+          SizedBox(height: 20),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 'Chưa có tài khoản?',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white70,
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.white70),
               ),
 
-              SizedBox(width: 10,),
+              SizedBox(width: 10),
 
               Material(
                 color: Colors.transparent,
@@ -124,16 +102,12 @@ class LoginOther extends StatelessWidget{
                   },
                   child: Text(
                     'Đăng ký ngay',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xfff6339a),
-                    ),
+                    style: TextStyle(fontSize: 16, color: Color(0xfff6339a)),
                   ),
                 ),
               ),
-
             ],
-          )
+          ),
         ],
       ),
     );

@@ -6,6 +6,8 @@ class ChannelModel {
   final String? bannerUrl;
   final String? websiteUrl;
   final int subscriberCount;
+  final int videoCount;
+  final int viewCount;
   final String? avatarUrl;
   final Map<String, dynamic>? socialLinks;
   final DateTime createdAt;
@@ -18,6 +20,8 @@ class ChannelModel {
     this.bannerUrl,
     this.websiteUrl,
     required this.subscriberCount,
+    required this.videoCount,
+    required this.viewCount,
     this.avatarUrl,
     this.socialLinks,
     required this.createdAt,
@@ -34,6 +38,8 @@ class ChannelModel {
       bannerUrl: json['banner_url'],
       websiteUrl: json['website_url'],
       subscriberCount: json['subscriber_count'] ?? 0,
+      videoCount: json['video_count'] ?? 0,
+      viewCount: json['view_count'] ?? 0,
       avatarUrl: user != null ? user['avatar_url'] : json['avatar_url'],
       socialLinks: json['social_link'] as Map<String, dynamic>?,
       createdAt: DateTime.parse(json['created_at']),
@@ -49,10 +55,11 @@ class ChannelModel {
       'banner_url': bannerUrl,
       'website_url': websiteUrl,
       'subscriber_count': subscriberCount,
+      'video_count': videoCount,
+      'view_count': viewCount,
       'avatar_url': avatarUrl,
       'social_link': socialLinks,
       'created_at': createdAt.toIso8601String(),
     };
   }
-
 }

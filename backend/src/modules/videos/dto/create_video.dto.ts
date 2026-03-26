@@ -1,9 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
+import { VideoStatus } from "../entities/video.entity";
 
 export class CreateVideoDto {
     @IsNotEmpty()
     @IsString()
-    @MaxLength(255)
+    @MaxLength(100)
     title!: string;
 
     @IsOptional()
@@ -11,4 +12,7 @@ export class CreateVideoDto {
     @MaxLength(1000)
     description?: string;
 
+    @IsOptional()
+    @IsEnum(VideoStatus)
+    status?: VideoStatus;
 }

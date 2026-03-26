@@ -4,6 +4,7 @@ import { Channel } from "../../channel/entities/channel.entity";
 export enum VideoStatus {
     UPLOADING = 'uploading',
     PUBLIC = 'public',
+    UNLISTED = 'unlisted',
     PRIVATE = 'private'
 }
 
@@ -44,7 +45,7 @@ export class Video {
     status!: VideoStatus;
 
     @Column({default: 0})
-    video_count!: number;
+    view_count!: number;
 
     @Column({default: 0})
     like_count!: number;

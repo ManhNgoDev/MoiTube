@@ -10,42 +10,35 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-
 class _LoginScreenState extends State<LoginScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
         width: double.infinity,
         height: double.infinity,
-
         decoration: BoxDecoration(
           gradient: RadialGradient(
             center: Alignment.center,
             radius: 1,
-            colors: [
-              Color(0xff2f0a1b),
-              Color(0xff12051b),
-            ],
+            colors: [Color(0xff2f0a1b), Color(0xff12051b)],
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
-
-            child: Column(
-              children: [
-                LoginHeader(),
-
-                SizedBox(height: 20,),
-
-                LoginForm(),
-
-                SizedBox(height: 30,),
-
-                LoginOther(),
-              ],
+          child: SingleChildScrollView(
+            // 🔥 THÊM CÁI NÀY
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  LoginHeader(),
+                  SizedBox(height: 20),
+                  LoginForm(),
+                  SizedBox(height: 30),
+                  LoginOther(),
+                ],
+              ),
             ),
           ),
         ),
