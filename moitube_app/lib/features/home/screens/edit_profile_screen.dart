@@ -79,22 +79,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_formKey.currentState!.validate()) {
       final Map<String, dynamic> updateData = {
         'name': _nameController.text,
-        'handle': _handleController.text,
+        'handle': _handleController.text.replaceAll('@', ''), // strip @ if added by user
         'description': _descriptionController.text,
-        'website_url': _socialLinks
-            .firstWhere(
-              (e) => e.type == 'Website',
-              orElse: () => SocialLinkItem(type: '', url: ''),
-            )
-            .url,
-        'social_link': {
-          for (var e in _socialLinks)
-            if (e.url.isNotEmpty) e.type: e.url,
-        },
       };
+
+      final websiteUrl = _socialLinks
+          .firstWhere(
+            (e) => e.type == 'Website',
+            orElse: () => SocialLinkItem(type: 'Website', url: ''),
+          )
+          .url;
+      
+      if (websiteUrl.isNotEmpty) {
+        updateData['website_url'] = websiteUrl;
+      }
+
+      final socialMap = {
+        for (var e in _socialLinks)
+          if (e.url.isNotEmpty && e.type != 'Website') e.type: e.url,
+      };
+
+      if (socialMap.isNotEmpty) {
+        updateData['social_links'] = socialMap;
+      }
 
       final success = await context.read<ChannelController>().updateChannelInfo(
         updateData,
+        avatar: _avatarFile,
+        banner: _bannerFile,
       );
 
       if (success && mounted) {
@@ -102,6 +114,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SnackBar(content: Text('Cập nhật profile thành công!')),
         );
         Navigator.pop(context);
+      } else if (mounted) {
+        final error = context.read<ChannelController>().error;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error ?? 'Có lỗi xảy ra, vui lòng thử lại'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -163,13 +183,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              InfoField(label: 'Tên kênh', controller: _nameController, hint: 'Nhập tên kênh'),
+              InfoField(label: 'Tên kênh', controller: _nameController, hint: 'Nhập tên kênh', isRequired: true),
               const SizedBox(height: 20),
               InfoField(
                 label: 'Handle', 
                 controller: _handleController, 
                 hint: '@handle',
                 subLabel: 'Handle của bạn là địa chỉ duy nhất trên MoiTube',
+                isRequired: true,
               ),
               const SizedBox(height: 24),
               InfoField(

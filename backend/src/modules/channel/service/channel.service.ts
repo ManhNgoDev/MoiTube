@@ -4,6 +4,7 @@ import { Channel } from "../entities/channel.entity";
 import { Repository } from "typeorm";
 import { User } from "../../user/entities/user.entity";
 import { UpdateChannelDto } from "../dto/update_channel.dto";
+import { CloudinaryService } from "../../cloudinary/service/cloudinary.service";
 
 @Injectable()
 export class ChannelService {
@@ -12,6 +13,7 @@ export class ChannelService {
         private channelRepo: Repository<Channel>,
         @InjectRepository(User)
         private userRepo: Repository<User>,
+        private cloudinaryService: CloudinaryService,
     ) {}
 
     //Hệ thống tự động tạo channel sau khi đăng ký tài khoản
@@ -57,7 +59,13 @@ export class ChannelService {
     }
 
     //Cập nhật thông tin channel
-    async updateChannel(channelId: string, userId: string, dto: UpdateChannelDto): Promise<Channel> {
+    async updateChannel(
+        channelId: string, 
+        userId: string, 
+        dto: UpdateChannelDto,
+        avatarFile?: Express.Multer.File,
+        bannerFile?: Express.Multer.File
+    ): Promise<Channel> {
         const channel = await this.channelRepo.findOne({
             where: {id: channelId},
             relations: ['user']
@@ -73,6 +81,19 @@ export class ChannelService {
             });
 
             if(existing) throw new ConflictException('Handle này đã được sử dụng');
+        }
+
+        // Upload avatar nếu có
+        if (avatarFile) {
+            const result = await this.cloudinaryService.uploadImage(avatarFile, 'moitube/avatars');
+            channel.user.avatar_url = result.secure_url;
+            await this.userRepo.save(channel.user);
+        }
+
+        // Upload banner nếu có
+        if (bannerFile) {
+            const result = await this.cloudinaryService.uploadImage(bannerFile, 'moitube/banners');
+            channel.banner_url = result.secure_url;
         }
 
         Object.assign(channel, dto);

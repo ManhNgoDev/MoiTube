@@ -8,12 +8,16 @@ import { ChannelController } from './controller/channel.controller';
 import { SubscriptionController } from './controller/subscription.controller';
 
 import { User } from '../user/entities/user.entity';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Channel, Subscription, User])],
+    imports: [
+        TypeOrmModule.forFeature([Channel, Subscription, User]),
+        CloudinaryModule
+    ],
 
     providers: [ChannelService, SubscriptionService],
     controllers: [ChannelController, SubscriptionController],
-    exports: [ChannelService, TypeOrmModule],
+    exports: [ChannelService, SubscriptionService, TypeOrmModule],
 })
 export class ChannelModule {}

@@ -27,7 +27,7 @@ class ProfileDetails extends StatelessWidget {
             Icon(Icons.upload_outlined, color: Colors.grey[600], size: 18),
             const SizedBox(width: 4),
             Text(
-              '0 videos',
+              '${channel.videoCount} videos',
               style: TextStyle(color: Colors.grey[600]),
             ),
           ],

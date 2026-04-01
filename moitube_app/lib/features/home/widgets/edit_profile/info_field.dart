@@ -7,6 +7,7 @@ class InfoField extends StatelessWidget {
   final int maxLines;
   final int? maxLength;
   final String? subLabel;
+  final bool isRequired;
 
   const InfoField({
     super.key,
@@ -16,6 +17,7 @@ class InfoField extends StatelessWidget {
     this.maxLines = 1,
     this.maxLength,
     this.subLabel,
+    this.isRequired = false,
   });
 
   @override
@@ -48,7 +50,7 @@ class InfoField extends StatelessWidget {
               counterStyle: const TextStyle(color: Colors.grey),
             ),
             validator: (value) {
-              if (value == null || value.isEmpty) {
+              if (isRequired && (value == null || value.trim().isEmpty)) {
                 return 'Vui lòng nhập thông tin';
               }
               return null;

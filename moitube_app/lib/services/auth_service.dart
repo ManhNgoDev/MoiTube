@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' as dio_lib;
 import 'package:moitube_app/core/api_client.dart';
 import 'package:moitube_app/services/storage_service.dart';
 
@@ -39,7 +40,11 @@ class AuthService {
   Future<String?> refreshToken() async {
     final refreshToken = await StorageService.getRefreshToken();
     if(refreshToken == null) return null;
-    final res = await ApiClient.dio.post(
+    
+    // Sử dụng instance Dio sạch (không có interceptor của ApiClient) để tránh vòng lặp vô tận
+    final dio = dio_lib.Dio(dio_lib.BaseOptions(baseUrl: ApiClient.baseUrl));
+    
+    final res = await dio.post(
       '/auth/refresh',
       data: {
         'refresh_token': refreshToken

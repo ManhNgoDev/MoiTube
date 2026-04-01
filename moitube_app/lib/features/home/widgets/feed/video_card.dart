@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:moitube_app/models/video.dart';
+import 'package:moitube_app/features/home/screens/watch_video_screen.dart';
 
 class VideoCard extends StatelessWidget{
-  final Map<String, dynamic> video;
+  final Video video;
 
   const VideoCard({super.key, required this.video});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => WatchVideoScreen(videoId: video.id),
+          ),
+        );
+      },
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //Thumnail Video
@@ -16,7 +27,7 @@ class VideoCard extends StatelessWidget{
             AspectRatio(
               aspectRatio: 16/9,
               child: Image.network(
-                video['thumbnail'],
+                video.thumbnailUrl ?? 'https://via.placeholder.com/640x360.png?text=No+Thumbnail',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
                   color: Color(0xff1a1a1a),
@@ -36,7 +47,7 @@ class VideoCard extends StatelessWidget{
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  video['duration'],
+                  video.durationFormatted,
                   style: TextStyle(
                     fontSize: 10,
                     color: Colors.white,
@@ -55,22 +66,18 @@ class VideoCard extends StatelessWidget{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //Avatar
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xffdc3ab6),
-                ),
-                child: Center(
-                  child: Text(
-                    video['channel'][0].toUpperCase(),
-                    style: TextStyle(
-                      color: Color(0xffdc3ab6),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              CircleAvatar(
+                radius: 15,
+                backgroundColor: const Color(0xffe24594),
+                backgroundImage: video.channelAvatarUrl != null
+                    ? NetworkImage(video.channelAvatarUrl!)
+                    : null,
+                child: video.channelAvatarUrl == null
+                    ? Text(
+                        video.channelName.isNotEmpty ? video.channelName[0].toUpperCase() : '?',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                      )
+                    : null,
               ),
 
               SizedBox(width: 10,),
@@ -81,7 +88,7 @@ class VideoCard extends StatelessWidget{
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      video['title'],
+                      video.title,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -98,7 +105,7 @@ class VideoCard extends StatelessWidget{
                     Row(
                       children: [
                         Text(
-                          video['channel'],
+                          video.channelName,
                           style: TextStyle(color: Colors.white54, fontSize: 12),
                         ),
                       ],
@@ -108,12 +115,12 @@ class VideoCard extends StatelessWidget{
                     Row(
                       children: [
                         Text(
-                          '${video['views']} lượt xem',
+                          '${video.viewsFormatted} lượt xem',
                           style: TextStyle(color: Colors.white54, fontSize: 12),
                         ),
                         Text(' • ' , style: TextStyle(color: Colors.white54, fontSize: 16)),
                         Text(
-                          video['time'],
+                          video.timeAgo,
                           style: TextStyle(color: Colors.white54, fontSize: 12),
                         ),
                       ],
@@ -126,6 +133,7 @@ class VideoCard extends StatelessWidget{
           ),
         )
       ],
+      ),
     );
   }
 }

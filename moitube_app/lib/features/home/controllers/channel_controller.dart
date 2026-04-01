@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:moitube_app/features/home/models/channel_model.dart';
 import 'package:moitube_app/services/channel_service.dart';
@@ -21,7 +22,6 @@ class ChannelController extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-
     try {
       debugPrint("Fetching my channel...");
       _myChannel = await _channelService.getMyChannel();
@@ -37,15 +37,24 @@ class ChannelController extends ChangeNotifier {
   }
 
   // Cập nhật thông tin channel
-  Future<bool> updateChannelInfo(Map<String, dynamic> data) async {
+  Future<bool> updateChannelInfo(
+    Map<String, dynamic> data, {
+    File? avatar,
+    File? banner,
+  }) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _myChannel = await _channelService.updateChannel(data);
+      _myChannel = await _channelService.updateChannel(
+        data,
+        avatar: avatar,
+        banner: banner,
+      );
       return true;
     } catch (e) {
+      debugPrint("Error updating channel: $e");
       _error = e.toString();
       return false;
     } finally {
