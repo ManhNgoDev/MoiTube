@@ -3,17 +3,20 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Subscription } from "../entities/subsciption.entity";
 import { Repository } from "typeorm";
 import { ChannelService } from "./channel.service";
+import { NotificationService } from "../../notification/service/notification.service";
+import { NotificationType } from "../../notification/entities/notification.entity";
 
 @Injectable()
 export class SubscriptionService {
     constructor(
         @InjectRepository(Subscription)
         private readonly subRepo: Repository<Subscription>,
-        private readonly channelService: ChannelService
+        private readonly channelService: ChannelService,
+        private readonly notificationService: NotificationService,
     ) {}
     //Đăng ký/ hủy đăng ký
     async subscribeToggle(userId: string, channelId: string): Promise<{subscribed: boolean}> {
-        await this.channelService.findById(channelId);
+        await this.channelService.findChannelById(channelId);
 
         const existing = await this.subRepo.findOne({
             where: {subscriber_id: userId, channel_id: channelId}
@@ -28,8 +31,25 @@ export class SubscriptionService {
                     subscriber_id: userId,
                     channel_id: channelId
             });
-            await this.subRepo.save(sub)
+            const savedSub = await this.subRepo.save(sub)
             await this.channelService.incrementSubscriber(channelId, 1)
+
+            // Create notification for channel owner
+            try {
+                const channel = await this.channelService.findChannelById(channelId);
+                if (channel?.user?.id) {
+                    await this.notificationService.createNotification(
+                        channel.user.id,
+                        userId,
+                        NotificationType.SUBSCRIBE,
+                        channelId,
+                        `đã đăng ký kênh của bạn`
+                    );
+                }
+            } catch (e) {
+                console.error('Error creating subscription notification', e);
+            }
+
             return {subscribed: true}
         }
     }

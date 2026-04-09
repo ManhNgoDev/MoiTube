@@ -9,11 +9,13 @@ import { SubscriptionController } from './controller/subscription.controller';
 
 import { User } from '../user/entities/user.entity';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Channel, Subscription, User]),
-        CloudinaryModule
+        CloudinaryModule,
+        NotificationModule
     ],
 
     providers: [ChannelService, SubscriptionService],

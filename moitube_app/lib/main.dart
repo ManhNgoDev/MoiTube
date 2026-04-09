@@ -8,6 +8,7 @@ import 'package:moitube_app/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:moitube_app/features/home/controllers/channel_controller.dart';
 import 'package:moitube_app/features/home/controllers/video_controller.dart';
+import 'package:moitube_app/features/home/controllers/notification_controller.dart';
 import 'package:moitube_app/features/home/screens/edit_profile_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -18,6 +19,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => ChannelController()),
         ChangeNotifierProvider(create: (_) => VideoController()),
+        ChangeNotifierProvider(create: (_) => NotificationController()),
       ],
       child: const MyApp()
     )

@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:moitube_app/models/video.dart';
 import 'package:moitube_app/services/video_service.dart';
 import 'package:moitube_app/features/home/widgets/watch/video_player_widget.dart';
 import 'package:moitube_app/features/home/widgets/watch/related_video_list.dart';
+import 'package:moitube_app/features/home/widgets/watch/comment_section.dart';
+import 'package:moitube_app/features/home/widgets/watch/watch_top_bar.dart';
+import 'package:moitube_app/features/home/widgets/watch/video_title_section.dart';
+import 'package:moitube_app/features/home/widgets/watch/video_action_row.dart';
+import 'package:moitube_app/features/home/widgets/watch/channel_row.dart';
+import 'package:moitube_app/features/home/widgets/watch/video_description_section.dart';
+import 'package:moitube_app/features/home/screens/channel_detail_screen.dart';
+import 'package:moitube_app/services/channel_service.dart';
 
 class WatchVideoScreen extends StatefulWidget {
   final String videoId;
@@ -15,6 +24,7 @@ class WatchVideoScreen extends StatefulWidget {
 
 class _WatchVideoScreenState extends State<WatchVideoScreen> {
   final VideoService _videoService = VideoService();
+  final ChannelService _channelService = ChannelService();
   late String _currentVideoId;
 
   Video? _video;
@@ -22,6 +32,13 @@ class _WatchVideoScreenState extends State<WatchVideoScreen> {
   bool _isLoading = true;
   bool _descriptionExpanded = false;
   String? _error;
+  bool _liking = false;
+  bool _disliking = false;
+  bool _isLiked = false;
+  bool _isDisliked = false;
+  bool _isOwner = false;
+  bool _isSubscribed = false;
+  bool _subscribing = false;
 
   @override
   void initState() {
@@ -35,12 +52,46 @@ class _WatchVideoScreenState extends State<WatchVideoScreen> {
       _isLoading = true;
       _error = null;
       _descriptionExpanded = false;
+      _isLiked = false;
+      _isDisliked = false;
+      _isOwner = false;
+      _isSubscribed = false;
+      _subscribing = false;
     });
 
     try {
       final video = await _videoService.getVideoById(_currentVideoId);
       final related = await _videoService.getRelatedVideos(_currentVideoId);
       _videoService.incrementView(_currentVideoId);
+
+      // If logged in, fetch my reaction (also tells if I'm owner)
+      try {
+        final my = await _videoService.getMyReaction(_currentVideoId);
+        final type = my['type'];
+        final owner = my['owner'] == true;
+        if (mounted) {
+          setState(() {
+            _isOwner = owner;
+            _isLiked = type == 'like';
+            _isDisliked = type == 'dislike';
+          });
+        }
+      } catch (_) {
+        // ignore: not logged in or API error
+      }
+
+      // Fetch subscription status for channel
+      final channelId = (video.channelId ?? '').trim();
+      if (channelId.isNotEmpty) {
+        try {
+          final subscribed = await _channelService.getSubscriptionStatus(channelId);
+          if (mounted) {
+            setState(() => _isSubscribed = subscribed);
+          }
+        } catch (_) {
+          // ignore when user not logged in
+        }
+      }
 
       if (mounted) {
         setState(() {
@@ -108,7 +159,11 @@ class _WatchVideoScreenState extends State<WatchVideoScreen> {
     return Column(
       children: [
         // Top bar
-        _buildTopBar(),
+        WatchTopBar(
+          onBack: () => Navigator.pop(context),
+          onSettings: () {},
+          onMore: () {},
+        ),
 
         // Video player
         VideoPlayerWidget(
@@ -123,25 +178,45 @@ class _WatchVideoScreenState extends State<WatchVideoScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Title + views
-                _buildTitleSection(video),
+                VideoTitleSection(video: video),
 
                 // Action buttons
-                _buildActionButtons(video),
+                VideoActionRow(
+                  likeCount: video.likeCount,
+                  liking: _liking,
+                  disliking: _disliking,
+                  isLiked: _isLiked,
+                  isDisliked: _isDisliked,
+                  onLike: _onLike,
+                  onDislike: _onDislike,
+                  onShare: () => _onShare(video),
+                  onDownload: () {},
+                ),
 
                 const Divider(color: Colors.white10, height: 1),
 
                 // Channel row
-                _buildChannelRow(video),
+                ChannelRow(
+                  video: video,
+                  onSubscribe: () => _toggleSubscribe(video),
+                  onOpenChannel: () => _openChannel(video),
+                  isSubscribed: _isSubscribed,
+                  subscribing: _subscribing,
+                ),
 
                 const Divider(color: Colors.white10, height: 1),
 
                 // Description
-                _buildDescriptionSection(video),
+                VideoDescriptionSection(
+                  description: video.description ?? '',
+                  expanded: _descriptionExpanded,
+                  onToggle: () => setState(() => _descriptionExpanded = !_descriptionExpanded),
+                ),
 
                 const Divider(color: Colors.white10, height: 1),
 
-                // Comment section header (placeholder for Feature 3)
-                _buildCommentSectionHeader(),
+                // Comments
+                CommentSection(videoId: _currentVideoId),
 
                 const Divider(color: Colors.white10, height: 1),
 
@@ -160,252 +235,188 @@ class _WatchVideoScreenState extends State<WatchVideoScreen> {
     );
   }
 
-  // ─── Top Bar ───
-  Widget _buildTopBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 22),
-            onPressed: () => Navigator.pop(context),
-          ),
-          const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.white, size: 22),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.white, size: 22),
-            onPressed: () {},
-          ),
-        ],
-      ),
+
+  Future<void> _onShare(Video video) async {
+    final link = (video.videoUrl ?? '').trim();
+    if (link.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không có link để chia sẻ')),
+      );
+      return;
+    }
+    await Clipboard.setData(ClipboardData(text: link));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Đã copy link video')),
     );
   }
 
-  // ─── Title + Views ───
-  Widget _buildTitleSection(Video video) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            video.title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              height: 1.3,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${video.viewsFormatted} lượt xem • ${video.timeAgo}',
-            style: const TextStyle(color: Colors.white54, fontSize: 13),
-          ),
-        ],
-      ),
-    );
+  Future<void> _toggleSubscribe(Video video) async {
+    final channelId = (video.channelId ?? '').trim();
+    if (channelId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không tìm thấy thông tin kênh')),
+      );
+      return;
+    }
+    if (_isOwner) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đây là kênh của bạn')),
+      );
+      return;
+    }
+    if (_subscribing) return;
+
+    setState(() => _subscribing = true);
+    try {
+      final subscribed = await _channelService.toggleSubscription(channelId);
+      if (!mounted) return;
+      setState(() => _isSubscribed = subscribed);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bạn cần đăng nhập để đăng ký kênh')),
+      );
+    } finally {
+      if (mounted) setState(() => _subscribing = false);
+    }
   }
 
-  // ─── Action Buttons (chip style) ───
-  Widget _buildActionButtons(Video video) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-      child: Row(
-        children: [
-          // Like
-          _buildActionChip(
-            icon: Icons.thumb_up_outlined,
-            label: video.likeCount > 0 ? _formatCount(video.likeCount) : 'Thích',
-            onTap: () {},
-          ),
-          const SizedBox(width: 8),
-
-          // Dislike
-          _buildActionChip(
-            icon: Icons.thumb_down_outlined,
-            onTap: () {},
-          ),
-          const SizedBox(width: 8),
-
-          // Share
-          _buildActionChip(
-            icon: Icons.share_outlined,
-            label: 'Chia sẻ',
-            onTap: () {},
-          ),
-          const SizedBox(width: 8),
-
-          // Download
-          _buildActionChip(
-            icon: Icons.download_outlined,
-            label: 'Tải xuống',
-            onTap: () {},
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionChip({
-    required IconData icon,
-    String? label,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: const Color(0xff272727),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: Colors.white, size: 18),
-            if (label != null) ...[
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ],
+  void _openChannel(Video video) {
+    final handle = (video.channelHandle ?? '').trim();
+    final channelId = (video.channelId ?? '').trim();
+    if (handle.isEmpty && channelId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không tìm thấy thông tin kênh')),
+      );
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChannelDetailScreen(
+          channelHandle: handle.isNotEmpty ? handle : null,
+          channelId: channelId.isNotEmpty ? channelId : null,
         ),
       ),
     );
   }
 
-  // ─── Channel Row ───
-  Widget _buildChannelRow(Video video) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          // Avatar
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: const Color(0xffe24594),
-            backgroundImage: video.channelAvatarUrl != null
-                ? NetworkImage(video.channelAvatarUrl!)
-                : null,
-            child: video.channelAvatarUrl == null
-                ? Text(
-                    video.channelName.isNotEmpty ? video.channelName[0].toUpperCase() : '?',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                  )
-                : null,
-          ),
-          const SizedBox(width: 12),
+  Future<void> _onLike() async {
+    final v = _video;
+    if (v == null) return;
+    if (_isOwner) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bạn không thể like video của chính bạn')),
+      );
+      return;
+    }
+    if (_liking || _disliking) return;
 
-          // Channel name + subscriber count
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  video.channelName,
-                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${video.viewsFormatted} người đăng ký',
-                  style: const TextStyle(color: Colors.white38, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
+    try {
+      setState(() => _liking = true);
+      final res = await _videoService.reactVideo(v.id, VideoReactionType.like);
+      final active = res['active'] == true;
+      if (!mounted) return;
+      setState(() {
+        final cur = _video!;
+        var likeCount = cur.likeCount;
+        var dislikeCount = cur.dislikeCount;
 
-          // Subscribe button
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xffe24594),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Text(
-              'Đăng ký',
-              style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
-    );
+        if (_isLiked && !active) {
+          likeCount = (likeCount - 1).clamp(0, 1 << 30);
+        } else if (!_isLiked && active) {
+          likeCount = likeCount + 1;
+          if (_isDisliked) dislikeCount = (dislikeCount - 1).clamp(0, 1 << 30);
+        }
+
+        _isLiked = active;
+        _isDisliked = false;
+
+        _video = Video(
+          id: cur.id,
+          channelId: cur.channelId,
+          channelHandle: cur.channelHandle,
+          title: cur.title,
+          description: cur.description,
+          thumbnailUrl: cur.thumbnailUrl,
+          videoUrl: cur.videoUrl,
+          duration: cur.duration,
+          status: cur.status,
+          viewCount: cur.viewCount,
+          likeCount: likeCount,
+          dislikeCount: dislikeCount,
+          publishedAt: cur.publishedAt,
+          channelName: cur.channelName,
+          channelAvatarUrl: cur.channelAvatarUrl,
+        );
+      });
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bạn cần đăng nhập để like')),
+      );
+    } finally {
+      if (mounted) setState(() => _liking = false);
+    }
   }
 
-  // ─── Description Section (collapsible) ───
-  Widget _buildDescriptionSection(Video video) {
-    final desc = video.description ?? '';
+  Future<void> _onDislike() async {
+    final v = _video;
+    if (v == null) return;
+    if (_isOwner) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bạn không thể dislike video của chính bạn')),
+      );
+      return;
+    }
+    if (_liking || _disliking) return;
 
-    return InkWell(
-      onTap: () => setState(() => _descriptionExpanded = !_descriptionExpanded),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Text(
-                  'Mô tả',
-                  style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
-                ),
-                const Spacer(),
-                Icon(
-                  _descriptionExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  color: Colors.white54,
-                  size: 22,
-                ),
-              ],
-            ),
+    try {
+      setState(() => _disliking = true);
+      final res = await _videoService.reactVideo(v.id, VideoReactionType.dislike);
+      final active = res['active'] == true;
+      if (!mounted) return;
+      setState(() {
+        final cur = _video!;
+        var likeCount = cur.likeCount;
+        var dislikeCount = cur.dislikeCount;
 
-            if (_descriptionExpanded && desc.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Text(
-                desc,
-                style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.6),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
+        if (_isDisliked && !active) {
+          dislikeCount = (dislikeCount - 1).clamp(0, 1 << 30);
+        } else if (!_isDisliked && active) {
+          dislikeCount = dislikeCount + 1;
+          if (_isLiked) likeCount = (likeCount - 1).clamp(0, 1 << 30);
+        }
+
+        _isDisliked = active;
+        _isLiked = false;
+
+        _video = Video(
+          id: cur.id,
+          channelId: cur.channelId,
+          channelHandle: cur.channelHandle,
+          title: cur.title,
+          description: cur.description,
+          thumbnailUrl: cur.thumbnailUrl,
+          videoUrl: cur.videoUrl,
+          duration: cur.duration,
+          status: cur.status,
+          viewCount: cur.viewCount,
+          likeCount: likeCount,
+          dislikeCount: dislikeCount,
+          publishedAt: cur.publishedAt,
+          channelName: cur.channelName,
+          channelAvatarUrl: cur.channelAvatarUrl,
+        );
+      });
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bạn cần đăng nhập để dislike')),
+      );
+    } finally {
+      if (mounted) setState(() => _disliking = false);
+    }
   }
 
-  // ─── Comment Section Header (placeholder for Feature 3) ───
-  Widget _buildCommentSectionHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 18),
-          const SizedBox(width: 8),
-          const Text(
-            'Bình luận',
-            style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(width: 6),
-          const Text(
-            '0',
-            style: TextStyle(color: Colors.white38, fontSize: 13),
-          ),
-          const Spacer(),
-          const Icon(Icons.keyboard_arrow_down, color: Colors.white54, size: 22),
-        ],
-      ),
-    );
-  }
-
-  // ─── Helpers ───
-  String _formatCount(int count) {
-    if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
-    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
-    return count.toString();
-  }
 }

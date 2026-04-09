@@ -4,6 +4,7 @@ import { VideoService } from "../service/video.service";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { CreateVideoDto } from "../dto/create_video.dto";
 import { UpdateVideoDto } from "../dto/update_video.dto";
+import { VideoLikeType } from "../entities/video_like.entity";
 
 @Controller('videos')
 export class VideoController {
@@ -48,9 +49,43 @@ export class VideoController {
     return this.videoService.searchVideoByTitleBinary(title);
   }
 
+  @Get('search')
+  searchVideos(
+    @Query('query') query: string,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    return this.videoService.searchVideos(query || '', +page || 1, +limit || 10);
+  }
+
+  @Get('channel/:handle')
+  getVideosByChannelHandle(
+    @Param('handle') handle: string,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    return this.videoService.getVideosByChannelHandle(handle, +page || 1, +limit || 12);
+  }
+
+  @Get('subscriptions/feed')
+  @UseGuards(JwtAuthGuard)
+  getSubscriptionFeed(
+    @Req() req: any,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    return this.videoService.getSubscriptionFeed(req.user.user_id, +page || 1, +limit || 10);
+  }
+
   @Get(':id')
   getVideoById(@Param('id') id: string) {
     return this.videoService.getVideoById(id);
+  }
+
+  @Get(':id/my-reaction')
+  @UseGuards(JwtAuthGuard)
+  getMyReaction(@Param('id') id: string, @Req() req: any) {
+    return this.videoService.getMyVideoReaction(req.user.user_id, id);
   }
 
   @Patch(':id')
@@ -79,13 +114,25 @@ export class VideoController {
 
   @Post(':id/like')
   @UseGuards(JwtAuthGuard)
-  incrementLikeCount(@Param('id') id: string, @Body('delta') delta: number) {
-    return this.videoService.incrementLikeCount(id, delta || 1);
+  like(@Param('id') id: string, @Req() req: any, @Body('delta') delta?: number) {
+    if (typeof delta === 'number') {
+      return this.videoService.incrementLikeCount(id, delta || 1);
+    }
+    return this.videoService.toggleVideoReaction(req.user.user_id, id, VideoLikeType.LIKE);
   }
 
   @Post(':id/dislike')
   @UseGuards(JwtAuthGuard)
-  incrementDislikeCount(@Param('id') id: string, @Body('delta') delta: number) {
-    return this.videoService.incrementDislikeCount(id, delta || 1);
+  dislike(@Param('id') id: string, @Req() req: any, @Body('delta') delta?: number) {
+    if (typeof delta === 'number') {
+      return this.videoService.incrementDislikeCount(id, delta || 1);
+    }
+    return this.videoService.toggleVideoReaction(req.user.user_id, id, VideoLikeType.DISLIKE);
+  }
+
+  @Post(':id/react')
+  @UseGuards(JwtAuthGuard)
+  react(@Param('id') id: string, @Req() req: any, @Body('type') type: VideoLikeType) {
+    return this.videoService.toggleVideoReaction(req.user.user_id, id, type);
   }
 }

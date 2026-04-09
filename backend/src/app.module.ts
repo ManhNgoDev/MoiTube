@@ -8,6 +8,8 @@ import { EmailVerificationModule } from './modules/auth/modules/email_verificati
 import { EmailModule } from './modules/email/email.module';
 import { ChannelModule } from './modules/channel/channel.module';
 import { VideoModule } from './modules/videos/video.module';
+import { CommentsModule } from './modules/comments/comments.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { VideoModule } from './modules/videos/video.module';
     EmailModule,
     ChannelModule,
     VideoModule,
+    CommentsModule,
+    NotificationModule,
   ]
 })
 export class AppModule {}

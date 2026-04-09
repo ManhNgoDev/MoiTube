@@ -25,6 +25,12 @@ export class ChannelController {
         return this.channelService.findById(req.user.user_id);
     }
 
+  // Xem channel theo id (public)
+  @Get('id/:id')
+  getChannelById(@Param('id') id: string) {
+      return this.channelService.findChannelById(id);
+  }
+
     // Xem channel theo handle (public)
     @Get(':handle')
     getChannelByHandle(@Param('handle') handle: string) {

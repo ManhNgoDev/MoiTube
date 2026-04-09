@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moitube_app/models/video.dart';
 import 'package:moitube_app/features/home/screens/watch_video_screen.dart';
+import 'package:moitube_app/features/home/screens/channel_detail_screen.dart';
 
 class VideoCard extends StatelessWidget{
   final Video video;
@@ -9,6 +10,21 @@ class VideoCard extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    void openChannel() {
+      final handle = (video.channelHandle ?? '').trim();
+      final channelId = (video.channelId ?? '').trim();
+      if (handle.isEmpty && channelId.isEmpty) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChannelDetailScreen(
+            channelHandle: handle.isNotEmpty ? handle : null,
+            channelId: channelId.isNotEmpty ? channelId : null,
+          ),
+        ),
+      );
+    }
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -66,18 +82,22 @@ class VideoCard extends StatelessWidget{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //Avatar
-              CircleAvatar(
-                radius: 15,
-                backgroundColor: const Color(0xffe24594),
-                backgroundImage: video.channelAvatarUrl != null
-                    ? NetworkImage(video.channelAvatarUrl!)
-                    : null,
-                child: video.channelAvatarUrl == null
-                    ? Text(
-                        video.channelName.isNotEmpty ? video.channelName[0].toUpperCase() : '?',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                      )
-                    : null,
+              InkWell(
+                onTap: openChannel,
+                borderRadius: BorderRadius.circular(20),
+                child: CircleAvatar(
+                  radius: 15,
+                  backgroundColor: const Color(0xffe24594),
+                  backgroundImage: video.channelAvatarUrl != null
+                      ? NetworkImage(video.channelAvatarUrl!)
+                      : null,
+                  child: video.channelAvatarUrl == null
+                      ? Text(
+                          video.channelName.isNotEmpty ? video.channelName[0].toUpperCase() : '?',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                        )
+                      : null,
+                ),
               ),
 
               SizedBox(width: 10,),
@@ -104,9 +124,12 @@ class VideoCard extends StatelessWidget{
                     //Name Channel
                     Row(
                       children: [
-                        Text(
-                          video.channelName,
-                          style: TextStyle(color: Colors.white54, fontSize: 12),
+                        InkWell(
+                          onTap: openChannel,
+                          child: Text(
+                            video.channelName,
+                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                          ),
                         ),
                       ],
                     ),

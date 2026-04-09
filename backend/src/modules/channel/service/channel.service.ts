@@ -39,6 +39,18 @@ export class ChannelService {
 
         return channel;
     }
+
+    // Tìm channel theo channel id (public/internal)
+    async findChannelById(channelId: string): Promise<Channel> {
+        const channel = await this.channelRepo.findOne({
+            where: { id: channelId },
+            relations: ['user'],
+        });
+
+        if (!channel) throw new NotFoundException('Kênh không tồn tại');
+        return channel;
+    }
+
     //Tìm Channel ID
     async findById(userId: string): Promise<Channel> {
         let channel = await this.channelRepo.findOne({

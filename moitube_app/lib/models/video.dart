@@ -1,5 +1,7 @@
 class Video {
   final String id;
+  final String? channelId;
+  final String? channelHandle;
   final String title;
   final String? description;
   final String? thumbnailUrl;
@@ -15,6 +17,8 @@ class Video {
 
   Video({
     required this.id,
+    this.channelId,
+    this.channelHandle,
     required this.title,
     this.description,
     this.thumbnailUrl,
@@ -33,6 +37,8 @@ class Video {
     final channel = json['channel'];
     return Video(
       id: json['id'] ?? '',
+      channelId: channel != null ? channel['id']?.toString() : null,
+      channelHandle: channel != null ? channel['handle']?.toString() : null,
       title: json['title'] ?? '',
       description: json['description'],
       thumbnailUrl: json['thumbnail_url'],
