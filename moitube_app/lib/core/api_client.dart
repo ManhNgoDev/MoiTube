@@ -6,7 +6,7 @@ import 'package:moitube_app/services/auth_service.dart';
 import 'package:moitube_app/services/storage_service.dart';
 
 class ApiClient {
-  static final String baseUrl = "http://10.0.2.2:3000";
+  static final String baseUrl = "https://moitube.onrender.com";
 
   static final Dio dio =
       Dio(

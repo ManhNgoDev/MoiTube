@@ -27,6 +27,12 @@ MoiTube allows users to upload, watch, and interact with videos. It includes a r
 - **Video Player**: [Chewie](https://pub.dev/packages/chewie) & [video_player](https://pub.dev/packages/video_player)
 - **Animations & Design**: Radial Gradients, Safe Margins, Lottie
 
+### Deployment & Release 🚀
+- **Backend API Hosting**: Deployed in production using [Render](https://render.com/).
+- **Database Hosting**: Cloud-hosted high availability PostgreSQL.
+- **Media Hosting**: Integrated with [Cloudinary](https://cloudinary.com/) for streaming video content directly over CDN.
+- **Mobile Application**: Compiled standalone Android `.apk` built strictly for production performance (`flutter build apk --release`), available to download in the GitHub Releases section.
+
 ## ✨ Core Features
 
 - **Authentication & Security**: 
