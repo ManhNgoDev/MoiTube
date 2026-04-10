@@ -1,23 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer'
 
+import { ConfigService } from '@nestjs/config';
+
 @Injectable()
 export class EmailService {
+    constructor(private configService: ConfigService) {}
+
     private getTransporter() {
-        if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+        const user = this.configService.get<string>('GMAIL_USER');
+        const pass = this.configService.get<string>('GMAIL_APP_PASSWORD');
+        
+        if (!user || !pass) {
             return null;
         }
         return nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.GMAIL_USER,
-                pass: process.env.GMAIL_APP_PASSWORD,
+                user,
+                pass,
             },
         });
     }
 
     async sendVerificationEmail(email: string, token: string) {
-        const verifyUrl = `${process.env.APP_URL}/auth/verify?token=${token}`;
+        const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
+        const verifyUrl = `${appUrl}/auth/verify?token=${token}`;
         const transporter = this.getTransporter();
 
         if (!transporter) {
@@ -29,8 +37,7 @@ export class EmailService {
         }
 
         await transporter.sendMail({
-
-            from: `"MoiTube" <${process.env.GMAIL_USER}>`,
+            from: `"MoiTube" <${this.configService.get<string>('GMAIL_USER')}>`,
             to: email,
             subject: 'Xác nhận email đăng ký MoiTube',
             html: `
@@ -62,7 +69,7 @@ export class EmailService {
         }
 
         await transporter.sendMail({
-            from: `"MoiTube" <${process.env.GMAIL_USER}>`,
+            from: `"MoiTube" <${this.configService.get<string>('GMAIL_USER')}>`,
             to: email,
             subject: 'Khôi phục mật khẩu MoiTube',
             html: `
