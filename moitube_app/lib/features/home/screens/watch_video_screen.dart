@@ -12,6 +12,7 @@ import 'package:moitube_app/features/home/widgets/watch/channel_row.dart';
 import 'package:moitube_app/features/home/widgets/watch/video_description_section.dart';
 import 'package:moitube_app/features/home/screens/channel_detail_screen.dart';
 import 'package:moitube_app/services/channel_service.dart';
+import 'package:moitube_app/services/history_service.dart';
 
 class WatchVideoScreen extends StatefulWidget {
   final String videoId;
@@ -25,6 +26,7 @@ class WatchVideoScreen extends StatefulWidget {
 class _WatchVideoScreenState extends State<WatchVideoScreen> {
   final VideoService _videoService = VideoService();
   final ChannelService _channelService = ChannelService();
+  final HistoryService _historyService = HistoryService();
   late String _currentVideoId;
 
   Video? _video;
@@ -63,6 +65,9 @@ class _WatchVideoScreenState extends State<WatchVideoScreen> {
       final video = await _videoService.getVideoById(_currentVideoId);
       final related = await _videoService.getRelatedVideos(_currentVideoId);
       _videoService.incrementView(_currentVideoId);
+      
+      // Ghi nhận lịch sử xem
+      _historyService.addToHistory(_currentVideoId);
 
       // If logged in, fetch my reaction (also tells if I'm owner)
       try {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:moitube_app/features/auth/controllers/auth_controller.dart';
 import 'package:moitube_app/features/auth/screens/login_screen.dart';
 import 'package:moitube_app/features/auth/screens/register_screen.dart';
+import 'package:moitube_app/features/auth/screens/forgot_password_screen.dart';
+import 'package:moitube_app/features/auth/screens/reset_password_screen.dart';
 import 'package:moitube_app/features/home/screens/home_screen.dart';
 import 'package:moitube_app/features/splash/splash_screen.dart';
 import 'package:moitube_app/routes/app_routes.dart';
@@ -42,6 +44,8 @@ class MyApp extends StatelessWidget {
         AppRoutes.splash: (context) => const SplashScreen(),
         AppRoutes.login: (context) => LoginScreen(),
         AppRoutes.register: (context) => RegisterScreen(),
+        AppRoutes.forgotPassword: (context) => const ForgotPasswordScreen(),
+        AppRoutes.resetPassword: (context) => const ResetPasswordScreen(),
         AppRoutes.home: (context) => HomeScreen(),
         AppRoutes.editProfile: (context) => const EditProfileScreen(),
       },

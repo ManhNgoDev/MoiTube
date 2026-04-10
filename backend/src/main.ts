@@ -6,6 +6,13 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization',
+  });
+
   const dataSource = app.get(DataSource);
 
   app.useGlobalPipes(new ValidationPipe({
@@ -13,11 +20,13 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
     transform: true
   }));
-  
+
   if (dataSource.isInitialized) {
     console.log('Connected to PostgreSQL successfully!');
   }
 
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  console.log(`Server running on port ${port} | ENV: ${process.env.NODE_ENV || 'development'}`);
 }
 bootstrap();

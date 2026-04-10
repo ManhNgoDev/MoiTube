@@ -5,6 +5,7 @@ import 'package:moitube_app/features/home/controllers/notification_controller.da
 import 'package:moitube_app/features/home/screens/channel_detail_screen.dart';
 import 'package:moitube_app/features/home/screens/notification_screen.dart';
 import 'package:moitube_app/features/home/screens/watch_video_screen.dart';
+import 'package:moitube_app/features/home/screens/watch_history_screen.dart';
 import 'package:moitube_app/features/home/widgets/profile/profile_details.dart';
 import 'package:moitube_app/features/home/widgets/profile/profile_info.dart';
 import 'package:moitube_app/features/home/widgets/profile/profile_stats.dart';
@@ -222,10 +223,11 @@ class _ProfileTabState extends State<ProfileTab> {
               Expanded(
                 child: _quickButton(
                   icon: Icons.history_toggle_off,
-                  label: 'Thư viện',
+                  label: 'Lịch sử xem',
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Thư viện sẽ bổ sung ở sprint sau')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const WatchHistoryScreen()),
                     );
                   },
                 ),

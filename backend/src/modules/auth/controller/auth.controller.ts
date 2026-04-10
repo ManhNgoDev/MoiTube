@@ -3,6 +3,7 @@ import { AuthService } from '../service/auth.service';
 import { RegisterDto } from '../dto/register.dto';
 import { LoginDto } from '../dto/login.dto';
 import { ResendDto } from '../dto/resend.dto';
+import { ForgotPasswordDto, ResetPasswordDto } from '../dto/forgot-password.dto';
 
 
 
@@ -46,5 +47,15 @@ export class AuthController {
   @Post('logout')
   logout(@Body('refresh_token') token: string) {
     return this.authService.logout(token);
+  }
+
+  @Post('forgot-password')
+  forgotPassword(@Body() body: ForgotPasswordDto) {
+    return this.authService.forgotPassword(body.email);
+  }
+
+  @Post('reset-password')
+  resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.resetPassword(body.email, body.otp, body.password);
   }
 }

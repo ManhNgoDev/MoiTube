@@ -15,16 +15,16 @@ export class User {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
-    @Column({unique: true, nullable: false})
+    @Column({ unique: true, nullable: false })
     email!: string;
 
-    @Column({unique: true, nullable: false})
+    @Column({ unique: true, nullable: false })
     username!: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     password_hash?: string;
 
-    @Column({unique: true, nullable: true})
+    @Column({ unique: true, nullable: true })
     google_id?: string;
 
     @Column({
@@ -34,7 +34,7 @@ export class User {
     })
     auth_provider!: AuthProvider;
 
-    @Column({type: 'text', nullable: true})
+    @Column({ type: 'text', nullable: true })
     avatar_url!: string;
 
     @Column({
@@ -44,9 +44,15 @@ export class User {
         default: UserRole.USER
     })
     role!: UserRole;
-    
-    @Column({default: false})
+
+    @Column({ default: false })
     is_verified!: boolean;
+
+    @Column({ type: 'varchar', nullable: true })
+    reset_password_otp!: string | null;
+
+    @Column({ type: 'timestamp', nullable: true })
+    reset_password_expires!: Date | null;
 
     @CreateDateColumn({
         type: 'timestamp',

@@ -133,11 +133,16 @@ class _LoginFormState extends State<LoginForm> {
 
           Align(
             alignment: Alignment.centerRight,
-            child: Text(
-              'Quên mật khẩu?',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(0xfff6339a),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/forgot-password');
+              },
+              child: Text(
+                'Quên mật khẩu?',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xfff6339a),
+                ),
               ),
             ),
           ),

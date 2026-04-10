@@ -242,4 +242,56 @@ export class AuthService {
             return { message: 'Đăng xuất thành công' };
         }
     }
+
+    // FORGOT PASSWORD (Generate OTP)
+    async forgotPassword(email: string) {
+        const user = await this.userRepo.findOne({ where: { email } });
+        if (!user) {
+            // Phản hồi chung chung để tránh lộ thông tin email có tồn tại hay không
+            return { message: 'Nếu email tồn tại trong hệ thống, chúng tôi đã gửi mã OTP khôi phục mật khẩu.' };
+        }
+
+        // Generate 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // 10 minutes expiry
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); 
+
+        user.reset_password_otp = otp;
+        user.reset_password_expires = expiresAt;
+        await this.userRepo.save(user);
+
+        await this.emailService.sendPasswordResetOtpEmail(user.email, otp);
+
+        return { message: 'Nếu email tồn tại trong hệ thống, chúng tôi đã gửi mã OTP khôi phục mật khẩu.' };
+    }
+
+    // RESET PASSWORD (Validate OTP and Reset)
+    async resetPassword(email: string, otp: string, newPassword: string) {
+        const user = await this.userRepo.findOne({ where: { email } });
+
+        if (!user || user.reset_password_otp !== otp) {
+            throw new BadRequestException('Mã OTP không hợp lệ hoặc không khớp với email này');
+        }
+
+        if (!user.reset_password_expires || new Date() > user.reset_password_expires) {
+            throw new BadRequestException('Mã OTP đã hết hạn, vui lòng yêu cầu lại mã mới');
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password_hash = hashedPassword;
+
+        // Xóa OTP
+        user.reset_password_otp = null; 
+        user.reset_password_expires = null;
+        // In TypeORM with Postgres, to force null instead of just omitting from save:
+        await this.userRepo.update(user.id, { 
+            password_hash: hashedPassword, 
+            reset_password_otp: null, 
+            reset_password_expires: null 
+        });
+
+        return { message: 'Thay đổi mật khẩu thành công. Bạn có thể đăng nhập bằng mật khẩu mới.' };
+    }
 }

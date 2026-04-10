@@ -10,6 +10,7 @@ import { ChannelModule } from './modules/channel/channel.module';
 import { VideoModule } from './modules/videos/video.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { HistoryModule } from './modules/history/history.module';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { NotificationModule } from './modules/notification/notification.module';
         type: 'postgres',
         url: config.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: config.get<string>('NODE_ENV') !== 'production',
         logging: ['error'],
         ssl: {
           rejectUnauthorized: false
@@ -38,6 +39,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     VideoModule,
     CommentsModule,
     NotificationModule,
+    HistoryModule,
   ]
 })
 export class AppModule {}

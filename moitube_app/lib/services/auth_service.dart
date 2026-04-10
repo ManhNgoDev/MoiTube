@@ -65,4 +65,26 @@ class AuthService {
     );
     return res.data;
   }
+
+  Future forgotPassword(String email) async {
+    final res = await ApiClient.dio.post(
+      '/auth/forgot-password',
+      data: {
+        'email': email,
+      }
+    );
+    return res.data;
+  }
+
+  Future resetPassword(String email, String otp, String password) async {
+    final res = await ApiClient.dio.post(
+      '/auth/reset-password',
+      data: {
+        'email': email,
+        'otp': otp,
+        'password': password,
+      }
+    );
+    return res.data;
+  }
 }

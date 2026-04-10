@@ -119,4 +119,75 @@ class AuthController extends ChangeNotifier {
       }
     }
   }
+
+  // FORGOT PASSWORD
+  Future<bool> forgotPassword(BuildContext context, String email) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final res = await authService.forgotPassword(email);
+      if (!context.mounted) return true;
+      
+      final message = res['message'] ?? 'Đã gửi yêu cầu khôi phục mật khẩu';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+      
+      return true;
+    } on DioException catch (e) {
+      if (!context.mounted) return false;
+      final message = e.response?.data['message'] ?? 'Đã có lỗi xảy ra';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // RESET PASSWORD
+  Future<bool> resetPassword(
+    BuildContext context, 
+    String email, 
+    String otp, 
+    String newPassword
+  ) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final res = await authService.resetPassword(email, otp, newPassword);
+      if (!context.mounted) return true;
+      
+      final message = res['message'] ?? 'Đổi mật khẩu thành công';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+      
+      return true;
+    } on DioException catch (e) {
+      if (!context.mounted) return false;
+      
+      final message = e.response?.data['message'];
+      String displayMessage = 'Đã có lỗi xảy ra';
+      
+      // Handle validation array
+      if (message is List && message.isNotEmpty) {
+        displayMessage = message.first.toString();
+      } else if (message is String) {
+        displayMessage = message;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(displayMessage)),
+      );
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 }
