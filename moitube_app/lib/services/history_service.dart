@@ -7,7 +7,6 @@ class HistoryService {
       await ApiClient.dio.post('/history/$videoId');
     } catch (e) {
       // Bỏ qua lỗi nếu chưa đăng nhập hoặc lỗi kết nối, quá trình xem video chính vẫn tiếp tục bình thường
-      print('Could not add to history: $e');
     }
   }
 

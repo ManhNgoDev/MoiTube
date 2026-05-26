@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:moitube_app/models/video.dart';
 import 'package:moitube_app/services/history_service.dart';
 import 'package:moitube_app/features/home/screens/watch_video_screen.dart';
-import 'package:moitube_app/features/home/widgets/feed/video_card.dart';
 
 class WatchHistoryScreen extends StatefulWidget {
   const WatchHistoryScreen({super.key});
@@ -93,6 +92,7 @@ class _WatchHistoryScreenState extends State<WatchHistoryScreen> {
         _historyVideos.removeWhere((v) => v.id == videoId);
       });
     } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Không thể xóa video này')),
       );
@@ -215,11 +215,11 @@ class _WatchHistoryScreenState extends State<WatchHistoryScreen> {
                         margin: const EdgeInsets.all(4),
                         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.8),
+                          color: Colors.black.withValues(alpha: 0.8),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          _formatDuration(video.duration ?? 0),
+                          _formatDuration(video.duration),
                           style: const TextStyle(color: Colors.white, fontSize: 12),
                         ),
                       ),
@@ -241,7 +241,7 @@ class _WatchHistoryScreenState extends State<WatchHistoryScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          video.channelName ?? 'Kênh vô danh',
+                          video.channelName,
                           style: const TextStyle(
                             color: Colors.white54,
                             fontSize: 12,

@@ -14,7 +14,7 @@ class _UploadTabState extends State<UploadTab> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xff000000),
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         height: double.infinity,
         child: SafeArea(

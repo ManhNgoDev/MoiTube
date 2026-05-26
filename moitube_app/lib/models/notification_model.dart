@@ -1,5 +1,5 @@
 enum NotificationType {
-  new_video,
+  newVideo,
   comment,
   like,
   subscribe,
@@ -62,7 +62,7 @@ class NotificationModel {
   static NotificationType _parseType(String type) {
     switch (type) {
       case 'new_video':
-        return NotificationType.new_video;
+        return NotificationType.newVideo;
       case 'comment':
         return NotificationType.comment;
       case 'like':
@@ -70,7 +70,7 @@ class NotificationModel {
       case 'subscribe':
         return NotificationType.subscribe;
       default:
-        return NotificationType.new_video;
+        return NotificationType.newVideo;
     }
   }
 
@@ -96,7 +96,7 @@ class NotificationModel {
   String get displayMessage {
     if (message != null) return message!;
     switch (type) {
-      case NotificationType.new_video:
+      case NotificationType.newVideo:
         return 'đã đăng video mới';
       case NotificationType.comment:
         return 'đã bình luận về video của bạn';

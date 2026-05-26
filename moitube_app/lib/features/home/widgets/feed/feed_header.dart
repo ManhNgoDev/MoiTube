@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:moitube_app/features/home/data/categories_data.dart';
-import 'package:moitube_app/features/home/widgets/feed/category_filter.dart';
 import 'package:moitube_app/features/home/controllers/notification_controller.dart';
 import 'package:moitube_app/features/home/screens/notification_screen.dart';
 import 'package:provider/provider.dart';

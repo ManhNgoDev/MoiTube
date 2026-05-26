@@ -108,11 +108,6 @@ class _UploadingScreenState extends State<UploadingScreen> with SingleTickerProv
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,

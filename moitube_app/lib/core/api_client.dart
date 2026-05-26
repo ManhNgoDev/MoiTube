@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:moitube_app/main.dart';
 import 'package:moitube_app/routes/app_routes.dart';
 import 'package:moitube_app/services/auth_service.dart';

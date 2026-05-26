@@ -5,7 +5,7 @@ import 'package:moitube_app/services/video_service.dart';
 class VideoController extends ChangeNotifier {
   final VideoService _videoService = VideoService();
 
-  List<Video> _videos = [];
+  final List<Video> _videos = [];
   bool _isLoading = false;
   String? _error;
   

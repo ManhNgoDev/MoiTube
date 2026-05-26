@@ -65,7 +65,7 @@ class _RelatedVideoItem extends StatelessWidget {
                     Image.network(
                       video.thumbnailUrl ?? '',
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (context, error, stackTrace) => Container(
                         color: const Color(0xff1a1a1a),
                         child: const Icon(Icons.video_collection, color: Colors.white24, size: 32),
                       ),

@@ -6,14 +6,14 @@ class UploadBody extends StatelessWidget {
   const UploadBody({super.key});
 
   Future<void> uploadVideo(BuildContext context) async {
+    final navigator = Navigator.of(context);
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.video,
     );
     if (result != null) {
       String path = result.files.single.path!;
 
-      Navigator.push(
-        context,
+      navigator.push(
         MaterialPageRoute(builder: (_) => VideoDetail(videoPath: path)),
       );
     }
@@ -21,7 +21,7 @@ class UploadBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:moitube_app/features/home/controllers/channel_controller.dart';
-import 'package:moitube_app/features/home/models/channel_model.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/edit_profile/edit_profile_images.dart';

@@ -276,7 +276,7 @@ class _NotificationItem extends StatelessWidget {
     final actId = notification.actorId;
 
     switch (notification.type) {
-      case NotificationType.new_video:
+      case NotificationType.newVideo:
       case NotificationType.comment:
       case NotificationType.like:
         if (resId != null && resId.isNotEmpty) {
@@ -299,7 +299,7 @@ class _NotificationItem extends StatelessWidget {
 
   IconData _getIconForType(NotificationType type) {
     switch (type) {
-      case NotificationType.new_video:
+      case NotificationType.newVideo:
         return Icons.notifications;
       case NotificationType.comment:
         return Icons.chat_bubble_outline;
@@ -312,7 +312,7 @@ class _NotificationItem extends StatelessWidget {
 
   Color _getColorForType(NotificationType type) {
     switch (type) {
-      case NotificationType.new_video:
+      case NotificationType.newVideo:
         return const Color(0xffe24594);
       case NotificationType.comment:
         return Colors.blueAccent;

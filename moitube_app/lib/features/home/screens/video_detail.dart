@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moitube_app/features/home/widgets/video_detail/video_detail_form.dart';
 import 'package:moitube_app/features/home/widgets/video_detail/video_detail_header.dart';
-import 'package:moitube_app/features/home/widgets/video_detail/video_detail_previewVid.dart';
+import 'package:moitube_app/features/home/widgets/video_detail/video_detail_preview_vid.dart';
 import 'package:moitube_app/features/home/widgets/video_detail/video_detail_thumbnail.dart';
 import 'package:moitube_app/features/home/widgets/video_detail/video_detail_privacy.dart';
 import 'package:moitube_app/features/home/screens/uploading_screen.dart';

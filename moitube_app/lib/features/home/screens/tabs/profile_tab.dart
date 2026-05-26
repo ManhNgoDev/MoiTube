@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:moitube_app/features/auth/controllers/auth_controller.dart';
 import 'package:moitube_app/features/home/controllers/channel_controller.dart';
 import 'package:moitube_app/features/home/controllers/notification_controller.dart';
-import 'package:moitube_app/features/home/screens/channel_detail_screen.dart';
 import 'package:moitube_app/features/home/screens/notification_screen.dart';
 import 'package:moitube_app/features/home/screens/watch_video_screen.dart';
 import 'package:moitube_app/features/home/screens/watch_history_screen.dart';
@@ -429,12 +428,6 @@ class _ProfileTabState extends State<ProfileTab> {
         Text('Website: ${channel.websiteUrl ?? 'Chưa cập nhật'}', style: const TextStyle(color: Colors.white70)),
       ],
     );
-  }
-
-  String _formatCount(int count) {
-    if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
-    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
-    return count.toString();
   }
 }
 
